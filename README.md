@@ -26,34 +26,23 @@ Dockerfile.jinja2  🡆  Dockerfile,  Docker image
 
 ```
 $ ./docker-template.py --help
-usage: docker-template.py [-h] [--template-file TEMPLATE_FILE]
-                          [--build-config-file BUILD_CONFIG_FILE]
-                          [--registry REGISTRY] [--platform PLATFORM]
-                          [--latest LATEST]
-                          {list-tags,render,build} ...
+usage: docker-template.py [-h] [--build-config-file BUILD_CONFIG_FILE]
+                          {list-tags,render,build,buildx} ...
 
 Create Dockerfiles from templates
 
 positional arguments:
-  {list-tags,render,build}
+  {list-tags,render,build,buildx}
                         action to be executed
     list-tags           Returns the list of available tags
     render              Render the template
     build               Render the template and build the image
+    buildx              Render the template and build the image using buildx
 
 optional arguments:
   -h, --help            show this help message and exit
-  --template-file TEMPLATE_FILE, -f TEMPLATE_FILE
-                        The Dockerfile template to use.
   --build-config-file BUILD_CONFIG_FILE, -b BUILD_CONFIG_FILE
                         The Python file containing the build configuration.
-  --registry REGISTRY, -r REGISTRY
-                        Add registry address to image name.
-  --platform PLATFORM, -p PLATFORM
-                        Build images for given platforms (requires experimental buildx
-                        plugin)
-  --latest LATEST, -l LATEST
-                        Add tag latest when building the image
 ```
 
 ### Original Use Case

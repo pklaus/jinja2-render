@@ -1,12 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 if __name__ == "__main__":
-    import argparse, sys, os
+    import argparse, sys, os, subprocess
     parser = argparse.ArgumentParser( description="Create Dockerfiles from templates" )
     parser.add_argument( '--template-file',     '-f', default='Dockerfile.jinja2',        help='The Dockerfile template to use.' )
     parser.add_argument( '--build-config-file', '-b', default='./build_configuration.py', help='The Python file containing the build configuration.' )
     parser.add_argument( '--registry', '-r', help='Add registry address to image name.' )
     parser.add_argument( '--platform', '-p', help='Build images for given platforms (requires experimental buildx plugin)' )
+    parser.add_argument( '--latest', '-l', help='Add tag latest when building the image' )
 
     subparsers = parser.add_subparsers( dest='action' )
     subparsers.add_parser( 'list-tags', help='Returns the list of available tags' )
@@ -45,13 +46,6 @@ if __name__ == "__main__":
         except FileNotFoundError:
             parser.error( "Cannot find file {}".format( os.path.abspath( args.build_config_file ) ) );
 
-    elif sys.version_info[0] == 2:
-        try:
-            import imp
-            build_configuration = imp.load_source( "buildconfig", os.path.abspath( args.build_config_file ) )
-        except FileNotFoundError:
-            parser.error( "Cannot find file {}".format( os.path.abspath( args.build_config_file ) ) );
-
     else: parser.error( "Couldn't detect python version." )
 
     BUILDS = build_configuration.BUILDS
@@ -81,6 +75,12 @@ if __name__ == "__main__":
         ## build
         if args.action == 'build':
             if args.platform is not None:
-                os.system( 'docker buildx build --pull -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest --platform={platform} --push .'.format( name=name, tag1=tag_end, tag2=shorttag, platform=args.platform ) )
+                if args.latest is not None:
+                    subprocess.run( 'docker buildx build --pull -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest --platform={platform} --push .'.format( name=name, tag1=tag_end, tag2=shorttag, platform=args.platform ), shell=True )
+                else:
+                    subprocess.run( 'docker buildx build --pull -t {name}:{tag1} --platform={platform} --push .'.format( name=name, tag1=tag_end, platform=args.platform ), shell=True )
             else:
-                os.system( 'docker build --pull --rm -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest .'.format( name=name, tag1=tag_end, tag2=shorttag ) )
+                if args.latest is not None:
+                    subprocess.run( 'docker build --pull --rm -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest .'.format( name=name, tag1=tag_end, tag2=shorttag ), shell=True )
+                else:
+                    subprocess.run( 'docker build --pull --rm -t {name}:{tag1} .'.format( name=name, tag1=tag_end ), shell=True )

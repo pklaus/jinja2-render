@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-if __name__ == "__main__":
+def main():
     import argparse, sys, os, subprocess
     parser = argparse.ArgumentParser( description="Create Dockerfiles from templates" )
     parser.add_argument( '--template-file',     '-f', default='Dockerfile.jinja2',        help='The Dockerfile template to use.' )
@@ -84,3 +84,6 @@ if __name__ == "__main__":
                     subprocess.run( 'docker build --pull --rm -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest .'.format( name=name, tag1=tag_end, tag2=shorttag ), shell=True )
                 else:
                     subprocess.run( 'docker build --pull --rm -t {name}:{tag1} .'.format( name=name, tag1=tag_end ), shell=True )
+
+if __name__ == "__main__":
+    main()

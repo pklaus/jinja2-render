@@ -20,7 +20,8 @@ def main():
     )
     parser.add_argument("--latest", "-l", help="Add tag latest when building the image")
 
-    subparsers = parser.add_subparsers(dest="action")
+    subparsers = parser.add_subparsers(dest="action", help="action to be executed")
+    subparsers.required = True
     subparsers.add_parser("list-tags", help="Returns the list of available tags")
     parser_render = subparsers.add_parser("render", help="Render the template")
     parser_build = subparsers.add_parser("build", help="Render the template and build the image")
@@ -35,34 +36,18 @@ def main():
 
     args = parser.parse_args()
 
-    ## no action chosen
-    if not args.action:
-        parser.error("Please choose an action.")
-
     ## load build_configuration.py from workdir
-    ## https://stackoverflow.com/a/67692
-    if sys.version_info[0] >= 3 and sys.version_info[1] >= 5:
-        try:
-            import importlib.util
+    if sys.version_info[0:3] < (3, 6):
+        parser.error("Minimum Python version is 3.6 - Exiting.")
 
-            spec = importlib.util.spec_from_file_location("buildconfig", os.path.abspath(args.build_config_file))
-            build_configuration = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(build_configuration)
-        except FileNotFoundError:
-            parser.error("Cannot find file {}".format(os.path.abspath(args.build_config_file)))
+    import importlib.util
 
-    elif sys.version_info[0] >= 3 and sys.version_info[1] in (3, 4):
-        try:
-            from importlib.machinery import SourceFileLoader
-
-            build_configuration = SourceFileLoader(
-                "buildconfig", os.path.abspath(args.build_config_file)
-            ).load_module()
-        except FileNotFoundError:
-            parser.error("Cannot find file {}".format(os.path.abspath(args.build_config_file)))
-
-    else:
-        parser.error("Couldn't detect python version.")
+    try:
+        spec = importlib.util.spec_from_file_location("buildconfig", os.path.abspath(args.build_config_file))
+        build_configuration = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build_configuration)
+    except FileNotFoundError:
+        parser.error("Cannot find file {}".format(os.path.abspath(args.build_config_file)))
 
     BUILDS = build_configuration.BUILDS
 
@@ -74,10 +59,8 @@ def main():
 
     ## render
     if args.action in ("render", "build"):
-        from jinja2 import FileSystemLoader, Environment
-
-        loader = FileSystemLoader(".")
-        env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+        loader = jinja2.FileSystemLoader(".")
+        env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = env.get_template(args.template_file)
 
         name, tag_end = args.tag.split(":")
@@ -93,30 +76,22 @@ def main():
             if args.platform is not None:
                 if args.latest is not None:
                     subprocess.run(
-                        "docker buildx build --pull -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest --platform={platform} --push .".format(
-                            name=name, tag1=tag_end, tag2=shorttag, platform=args.platform
-                        ),
+                        f"docker buildx build --pull -t {name}:{tag_end} -t {name}:{shorttag} -t {name}:latest --platform={args.platform} --push .",
                         shell=True,
                     )
                 else:
                     subprocess.run(
-                        "docker buildx build --pull -t {name}:{tag1} --platform={platform} --push .".format(
-                            name=name, tag1=tag_end, platform=args.platform
-                        ),
+                        f"docker buildx build --pull -t {name}:{tag_end} --platform={args.platform} --push .",
                         shell=True,
                     )
             else:
                 if args.latest is not None:
                     subprocess.run(
-                        "docker build --pull --rm -t {name}:{tag1} -t {name}:{tag2} -t {name}:latest .".format(
-                            name=name, tag1=tag_end, tag2=shorttag
-                        ),
+                        f"docker build --pull --rm -t {name}:{tag_end} -t {name}:{shorttag} -t {name}:latest .",
                         shell=True,
                     )
                 else:
-                    subprocess.run(
-                        "docker build --pull --rm -t {name}:{tag1} .".format(name=name, tag1=tag_end), shell=True
-                    )
+                    subprocess.run(f"docker build --pull --rm -t {name}:{tag_end} .", shell=True)
 
 
 if __name__ == "__main__":

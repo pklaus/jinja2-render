@@ -34,5 +34,7 @@ as a build failure at the end if it would require rebuilding everything before.
 
 * Philipp Klaus, University Frankfurt  
   *initial author*
+* Florian Feldbauer, University Bochum  
+  *custom registries, support for buildx*
 
 [Jinja2 For Loop]: https://jinja.palletsprojects.com/en/2.11.x/templates/#for

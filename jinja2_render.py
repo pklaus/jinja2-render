@@ -48,7 +48,7 @@ def main():
 
     CONTEXTS = contexts.CONTEXTS
 
-    if args.context is None:
+    if args.which is None:
         print("No context to render the template was provided. Please choose from:", file=sys.stderr)
         for tag in CONTEXTS:
             print(tag)

@@ -22,7 +22,7 @@ def main():
     parser.add_argument(
         "which",
         nargs="?",
-        help="Context to choose. Omit for a list of contexts available in the configuration file (-c).",
+        help="Context to choose. Omit for a list of contexts available in the contexts file (-c).",
     )
 
     try:
@@ -32,7 +32,6 @@ def main():
 
     args = parser.parse_args()
 
-    ## load the context configuration file
     if sys.version_info[0:3] < (3, 6):
         parser.error("Minimum Python version is 3.6 - Exiting.")
 

@@ -37,7 +37,7 @@ Render a Jinja2 template from the command line.
 
 positional arguments:
   which        Context to choose. Omit for a list of contexts
-               available in the configuration file (-c).
+               available in the contexts file (-c).
                (default: None)
 
 optional arguments:
@@ -64,7 +64,7 @@ RUN echo "Done!"
 
 ```
 
-Content of `context_configuration.py`:
+Content of `contexts.py`:
 
 ```python
 CONTEXTS = {
@@ -93,13 +93,13 @@ RUN apt-get update \
 RUN echo "Done!"
 ```
 
-### The Context Configuration File
+### The Contexts File
 
-The configuration file (defaults to `./context_config.py`) contains
+The contexts file (defaults to `./contexts.py`) contains
 one ore multiple context definitions to render the template.
 This includes variables to be substituted, lists to render for loops, etc.
 
-* The context configuration file **must** contain a global `CONTEXTS = {}`
+* The contexts file **must** contain a global `CONTEXTS = {}`
   with keys corresponding to different contexts that can be selected.
   (*Pro Tip™*: Instead of a dictionary, this CONTEXTS object could also
   be a class that derives from dict.)

@@ -105,6 +105,8 @@ def main():
         print("DRY RUN - resulting command line call would be:")
         print(cmd)
         sys.exit(0)
+    print("Will build now using:")
+    print(cmd)
     sys.exit(subprocess.run(cmd, shell=True).returncode)
 
 

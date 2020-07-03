@@ -5,28 +5,24 @@ def main():
     import argparse, sys, os, subprocess
 
     ## Command Line Argument Parsing
-    parser = argparse.ArgumentParser(description="Render Dockerfiles from Jinja2 templates")
+    parser = argparse.ArgumentParser(
+        description="Render Dockerfiles from Jinja2 templates",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
-        "--build-config-file",
-        "-b",
-        default="./build_configuration.py",
-        help="The Python file containing the build configuration.",
+        "-c",
+        dest="contexts",
+        default="./contexts.py",
+        help="The Python file defining the contexts to render the template.",
     )
-
-    # subparser for possible actions
-    subparsers = parser.add_subparsers(dest="action", help="action to be executed")
-    subparsers.required = True
-
-    # ACTION list-tags
-    subparsers.add_parser("list-tags", help="Returns the list of available tags")
-
-    # ACTION render
-    parser_render = subparsers.add_parser("render", help="Render the template")
-    parser_render.add_argument(
-        "build_config_tag", help="Tag to select from the build configuration file.",
+    parser.add_argument("-f", default="Dockerfile.jinja2", dest="template", help="The Jinja2 template to use.")
+    parser.add_argument(
+        "-o", default="Dockerfile", dest="output", help="The output file to write to.",
     )
-    parser_render.add_argument(
-        "--template-file", "-f", default="Dockerfile.jinja2", help="The Dockerfile template to use."
+    parser.add_argument(
+        "which",
+        nargs="?",
+        help="Which context to choose. Omit for a list of contexts defined in the context configuration provided with parameter -c.",
     )
 
     try:
@@ -36,36 +32,34 @@ def main():
 
     args = parser.parse_args()
 
-    ## load build_configuration.py from workdir
+    ## load the context configuration file
     if sys.version_info[0:3] < (3, 6):
         parser.error("Minimum Python version is 3.6 - Exiting.")
 
     import importlib.util
 
     try:
-        build_config_file = os.path.abspath(args.build_config_file)
-        spec = importlib.util.spec_from_file_location("buildconfig", build_config_file)
-        build_configuration = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(build_configuration)
+        contexts_file = os.path.abspath(args.contexts)
+        spec = importlib.util.spec_from_file_location("contexts", contexts_file)
+        contexts = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(contexts)
     except FileNotFoundError:
-        parser.error("Cannot find file {}".format(os.path.abspath(args.build_config_file)))
+        parser.error("Cannot find file {}".format(os.path.abspath(args.contexts)))
 
-    BUILDS = build_configuration.BUILDS
+    CONTEXTS = contexts.CONTEXTS
 
-    ## list-tags
-    if args.action == "list-tags":
-        for tag in BUILDS.keys():
+    if args.context is None:
+        print("No context to render the template was provided. Please choose from:", file=sys.stderr)
+        for tag in CONTEXTS:
             print(tag)
         sys.exit(0)
 
-    ## render
-    if args.action == "render":
-        loader = jinja2.FileSystemLoader(".")
-        env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = env.get_template(args.template_file)
+    loader = jinja2.FileSystemLoader(".")
+    j2_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+    template = j2_env.get_template(args.template)
 
-        with open("Dockerfile", "w") as f:
-            f.write(template.render(BUILDS[args.build_config_tag]))
+    with open(args.output, "wt") as f:
+        f.write(template.render(CONTEXTS.get(args.which)))
 
 
 if __name__ == "__main__":

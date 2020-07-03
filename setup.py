@@ -4,8 +4,7 @@ from setuptools import setup
 
 try:
     import pypandoc
-    LDESC = open('README.md', 'r').read()
-    LDESC = pypandoc.convert(LDESC, 'rst', format='md')
+    LDESC = pypandoc.convert_file('README.md', 'rst', format='md')
 except (ImportError, IOError, RuntimeError) as e:
     print("Pandoc / pypandoc missing - couldn't create convert README.md to reStructuredText")
     print(str(e))

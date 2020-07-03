@@ -9,19 +9,19 @@ It was invented for use with Dockerfiles but its use case goes far beyond.
 This is useful for example in the following cases:
 
 * The desired document (eg. Dockerfile) contains a lot of repeated statements.
-  They can be replaced in a Jinja2 Template by a [Jinja2 For Loop][].
+  In a Jinja2 Template they can be replaced by a [For Loop][].
 * The configuration space for the desired document is large and the differences
   would be small, so maintaining a single template file is much easier.
 
 ### Workflow
 
 ```
-                    jinja2-render
-                   (& contexts.py)
-                         ↓
+                     jinja2-render
+                    (& contexts.py)
+                          ↓
 
-Jinja2 Template File           Rendered File
-(eg. Dockerfile.jinja)   🡆    (eg. Dockerfile)
+Jinja2 Template File            Rendered File
+(eg. Dockerfile.jinja2)   🡆    (eg. Dockerfile)
 ```
 
 ### Synopsis

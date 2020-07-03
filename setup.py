@@ -12,7 +12,7 @@ except (ImportError, IOError, RuntimeError) as e:
 
 setup(name='docker-template',
       version = '1.dev',
-      description = 'docker-template = A tool to rendering Jinja2 templates to Dockerfiles',
+      description = 'docker-template – A tool to render Jinja2 templates to Dockerfiles',
       long_description = LDESC,
       author = 'Philipp Klaus',
       author_email = 'philipp.l.klaus@web.de',

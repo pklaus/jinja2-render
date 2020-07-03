@@ -6,7 +6,7 @@ def main():
 
     ## Command Line Argument Parsing
     parser = argparse.ArgumentParser(
-        description="Render Dockerfiles from Jinja2 templates",
+        description="Render a Jinja2 template from the command line.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -22,7 +22,7 @@ def main():
     parser.add_argument(
         "which",
         nargs="?",
-        help="Which context to choose. Omit for a list of contexts defined in the context configuration provided with parameter -c.",
+        help="Context to choose. Omit for a list of contexts available in the configuration file (-c).",
     )
 
     try:

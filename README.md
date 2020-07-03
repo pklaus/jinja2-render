@@ -1,40 +1,44 @@
-# docker-template
-*A Python Tool to Simplify the Automated Creation of a Dockerfile Using Jinja2 Templates*
+# jinja2-render
+*A Python Tool to Render Jinja2 Templates on the Command Line with Different Contexts*
 
-**docker-template** hugely simplifies building Docker images with repetitive sections.
-It is a Python script allowing to create Dockerfiles from a Jinja2 Template
-with the help of a configuration file defining different contexts (`contexts.py`)
+**jinja2-render** hugely simplifies creating different versions of a text file.
+It takes a jinja2 Template file as input and renders it to a final document
+using a context loaded from a Python script.
+It was invented for use with Dockerfiles but its use case goes far beyond.
 
 This is useful for example in the following cases:
 
-* Your Dockerfile contains a lot of repeated statements.
-  They can be replaced by a [Jinja2 For Loop][].
-* Your Dockerfile depends on a software with different versions
-  and you want to simplify/automate switching between them.
+* The desired document (eg. Dockerfile) contains a lot of repeated statements.
+  They can be replaced in a Jinja2 Template by a [Jinja2 For Loop][].
+* The configuration space for the desired document is large and the differences
+  would be small, so maintaining a single template file is much easier.
 
 ### Workflow
 
 ```
-               docker-template
-               (& contexts.py)
-                     ↓
+                    jinja2-render
+                   (& contexts.py)
+                         ↓
 
-Dockerfile.jinja2    🡆    Dockerfile
+Jinja2 Template File           Rendered File
+(eg. Dockerfile.jinja)   🡆    (eg. Dockerfile)
 ```
 
 ### Synopsis
 
 ```
-usage: docker-template [-h] [-c CONTEXTS] [-f TEMPLATE]
-                       [-o OUTPUT]
-                       [which]
+$ jinja2-render -h
 
-Render Dockerfiles from Jinja2 templates
+usage: jinja2-render [-h] [-c CONTEXTS] [-f TEMPLATE]
+                     [-o OUTPUT]
+                     [which]
+
+Render a Jinja2 template from the command line.
 
 positional arguments:
-  which        Which context to choose. Omit for a list of
-               contexts defined in the context configuration
-               provided with parameter -c. (default: None)
+  which        Context to choose. Omit for a list of contexts
+               available in the configuration file (-c).
+               (default: None)
 
 optional arguments:
   -h, --help   show this help message and exit
@@ -72,10 +76,10 @@ CONTEXTS = {
 
 ```
 
-Call to `docker-template`:
+Call to `jinja2-render`:
 
 ```sh
-docker-template v1.0
+jinja2-render v1.0
 ```
 
 Resulting in the following rendered Dockerfile:

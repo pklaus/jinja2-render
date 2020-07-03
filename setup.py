@@ -10,19 +10,19 @@ except (ImportError, IOError, RuntimeError) as e:
     print(str(e))
     LDESC = ''
 
-setup(name='docker-template',
-      version = '1.dev',
-      description = 'docker-template – A tool to render Jinja2 templates to Dockerfiles',
+setup(name='jinja2-render',
+      version = '1.dev0',
+      description = 'jinja2-render – A CLI tool to render Jinja2 templates',
       long_description = LDESC,
       author = 'Philipp Klaus',
       author_email = 'philipp.l.klaus@web.de',
-      url = 'https://github.com/pklaus/docker-template',
+      url = 'https://github.com/pklaus/jinja2-render',
       license = 'GPL',
       #packages = ['',],
-      py_modules = ['docker_template',],
+      py_modules = ['jinja2_render',],
       entry_points = {
           'console_scripts': [
-              'docker-template = docker_template:main',
+              'jinja2-render = jinja2_render:main',
           ],
       },
       zip_safe = True,
@@ -30,7 +30,7 @@ setup(name='docker-template',
       install_requires = [
           "jinja2",
       ],
-      keywords = 'PySerial Manager',
+      keywords = 'Context-dependent Jinja2 Template Rendering CLI Docker Dockerfile',
       classifiers = [
           'Development Status :: 4 - Beta',
           'Operating System :: OS Independent',

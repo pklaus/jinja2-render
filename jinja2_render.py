@@ -53,6 +53,12 @@ def main():
             print(tag)
         sys.exit(0)
 
+    if args.which not in CONTEXTS:
+        print(f"Invalid context {args.which}. Available contexts are:", file=sys.stderr)
+        for tag in CONTEXTS:
+            print(tag, file=sys.stderr)
+        sys.exit(1)
+
     loader = jinja2.FileSystemLoader(".")
     j2_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
     template = j2_env.get_template(args.template)

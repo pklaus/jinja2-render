@@ -2,18 +2,11 @@
 
 from setuptools import setup
 
-try:
-    import pypandoc
-    LDESC = pypandoc.convert_file('README.md', 'rst', format='md')
-except (ImportError, IOError, RuntimeError) as e:
-    print("Pandoc / pypandoc missing - couldn't create convert README.md to reStructuredText")
-    print(str(e))
-    LDESC = ''
-
 setup(name='jinja2-render',
       version = '1.dev0',
       description = 'jinja2-render – A CLI tool to render Jinja2 templates',
-      long_description = LDESC,
+      long_description = open('README.md', 'rt').read(),
+      long_description_content_type = 'text/markdown',
       author = 'Philipp Klaus',
       author_email = 'philipp.l.klaus@web.de',
       url = 'https://github.com/pklaus/jinja2-render',

@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 
+import argparse, os, subprocess, sys
+import importlib.util
+from contextlib import contextmanager
+
+
+@contextmanager
+def add_to_path(p):
+    old_path = sys.path
+    sys.path = sys.path[:]
+    sys.path.insert(0, p)
+    try:
+        yield
+    finally:
+        sys.path = old_path
 
 def main():
-    import argparse, sys, os, subprocess
-
     ## Command Line Argument Parsing
     parser = argparse.ArgumentParser(
         description="Render a Jinja2 template from the command line.",
@@ -35,13 +47,13 @@ def main():
     if sys.version_info[0:3] < (3, 6):
         parser.error("Minimum Python version is 3.6 - Exiting.")
 
-    import importlib.util
 
     try:
         contexts_file = os.path.abspath(args.contexts)
-        spec = importlib.util.spec_from_file_location("contexts", contexts_file)
-        contexts = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(contexts)
+        with add_to_path(os.path.dirname(contexts_file)):
+            spec = importlib.util.spec_from_file_location("contexts", contexts_file)
+            contexts = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(contexts)
     except FileNotFoundError:
         parser.error("Cannot find file {}".format(os.path.abspath(args.contexts)))
 
